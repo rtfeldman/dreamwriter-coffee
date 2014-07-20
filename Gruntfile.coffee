@@ -7,8 +7,12 @@ module.exports = (grunt) ->
         files: ["src/**/*.coffee"]
         tasks: ["coffeeify"]
 
+      stylus:
+        files: ["src/stylesheets/**/*.styl"]
+        tasks: ["stylus"]
+
       html:
-        files: ["src/*.html"]
+        files: ["src/**/*.html"]
         tasks: ["copy"]
 
     connect:
@@ -21,6 +25,13 @@ module.exports = (grunt) ->
       html:
         src:  "src/index.html"
         dest: "dist/index.html"
+
+    stylus:
+      compile:
+        options:
+          paths: ["src/stylesheets/*.styl"]
+        files:
+          "dist/dreamwriter.css": ["src/stylesheets/*.styl"]
 
     coffeeify:
       options:
@@ -35,11 +46,12 @@ module.exports = (grunt) ->
         src:  "./vendor/**/*.js"
         dest: "dist/vendor.js"
 
-  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-coffeeify", "grunt-contrib-copy", "grunt-contrib-connect"].forEach (plugin) -> grunt.loadNpmTasks plugin
+  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-coffeeify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus"].forEach (plugin) -> grunt.loadNpmTasks plugin
 
   grunt.registerTask "build", [
     "copy"
     "coffeeify"
+    "stylus"
   ]
 
   grunt.registerTask "default", [
