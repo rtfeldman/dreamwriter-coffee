@@ -19,6 +19,10 @@ module.exports = (grunt) ->
         files: ["src/images/*.*"]
         tasks: ["copy"]
 
+      fonts:
+        files: ["src/fonts/*.*"]
+        tasks: ["copy"]
+
     connect:
       static:
         options:
@@ -34,6 +38,12 @@ module.exports = (grunt) ->
         expand: true
         cwd: "src"
         src: "images/**"
+        dest: "dist/"
+
+      fonts:
+        expand: true
+        cwd: "src"
+        src: "fonts/**"
         dest: "dist/"
 
     stylus:
