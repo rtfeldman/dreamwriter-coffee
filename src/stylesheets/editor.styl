@@ -1,4 +1,37 @@
+editor-width = 650px
+
 #editor-container
-  width 600px
-  min-width 600px
+  width editor-width
+  min-width editor-width
   background-color white
+  margin 0 6px
+  box-shadow 0.4em 0.4em 0.4em #644b2b
+
+  #editor
+    position relative
+    display block
+    color #000
+    font-family Georgia, Times New Roman, Serif
+    height 100%
+    width 100%
+    overflow auto
+    background #fff
+    border none
+    box-sizing border-box
+
+  .loaded-document
+    text-rendering optimizeLegibility
+    font-kerning normal
+
+    // NOTE: currently these only do anything in Chrome.
+    font-feature-settings kern
+    -webkit-font-feature-settings "kern" 1
+    -moz-font-feature-settings "kern"
+
+    font-size 18px
+    line-height 24px
+    padding 65px
+    font-family Georgia, serif
+
+    p
+      text-indent 36px
