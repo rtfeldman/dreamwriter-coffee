@@ -1,7 +1,5 @@
 @require "mixins/page-text"
 
-right-sidebar-header-height = 50
-
 #right-sidebar-container
   position relative
   flex-grow 1
@@ -11,18 +9,26 @@ right-sidebar-header-height = 50
   box-sizing border-box
 
   color #644b2b
+  opacity 0.8
+
+  &:hover, &:focus
+    background-color #e0c59e
+    color #644b2b
+    opacity 1
 
   #right-sidebar-header
-    position absolute
-    top 0
-    left 0
+    position relative
     width 100%
     box-sizing border-box
-    height right-sidebar-header-height px
+
+    font-size 32px
+    padding 0 16px
+    line-height 32px
+
+    color #644b2b
 
   #notes
     padding 20px
-    padding-top right-sidebar-header-height px
     box-sizing border-box
 
     page-text()
