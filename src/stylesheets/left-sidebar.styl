@@ -1,3 +1,33 @@
+left-sidebar-header-height = 50
+
 #left-sidebar-container
+  position relative
   flex-grow 1
-  opacity: 0.5
+
+  width 100%
+  overflow auto
+  box-sizing border-box
+
+  color #644b2b
+
+  #left-sidebar-header
+    position absolute
+    top 0
+    right 0
+    width 100%
+    box-sizing border-box
+    height left-sidebar-header-height px
+
+  #outline
+    padding-top left-sidebar-header-height px
+    box-sizing border-box
+
+    li
+      padding 0.5em
+      font-size 1.5em
+      min-height 1em
+      margin 0
+      cursor default
+      text-align center
+      list-style-position inside
+      list-style-type none

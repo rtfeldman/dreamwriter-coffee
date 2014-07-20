@@ -1,20 +1,21 @@
 editor-width = 800px
 editor-header-width = editor-width - 40
 
+@require "mixins/page-text"
+
 #editor-container
   position relative
   display flex
-  width editor-width
-  min-width editor-width
+  width editor-width px
+  min-width editor-width px
   background #fff
-  margin 0 6px
   box-shadow 0.4em 0.4em 0.4em #644b2b
 
   #editor-area
     display block
     overflow auto
     border none
-    width editor-width
+    width editor-width px
     box-sizing border-box
 
   #editor-header, #editor-footer
@@ -35,24 +36,10 @@ editor-header-width = editor-width - 40
 
   #loaded-document
     background #fff
-    font-family 'Roboto Slab', 'Georgia', 'Times New Roman', serif
 
-    text-rendering optimizeLegibility
-    font-kerning normal
-
-    // NOTE: currently these only do anything in Chrome.
-    font-feature-settings kern
-    -webkit-font-feature-settings "kern" 1
-    -moz-font-feature-settings "kern"
-
-    overflow-x visible
     width 600px
-    font-size 18px
-    line-height 30px
     padding 6em 1.5em 6em 1.5em
     margin 0 auto
     box-sizing border-box
 
-    p
-      text-indent 36px
-      margin 0
+    page-text()
