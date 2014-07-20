@@ -43,6 +43,14 @@ module.exports = (grunt) ->
         files:
           "dist/dreamwriter.css": ["src/stylesheets/*.styl"]
 
+    autoprefixer:
+      dreamwriter:
+        options:
+          map: true
+
+        src: "dist/dreamwriter.css"
+        dest: "dist/dreamwriter.css"
+
     coffeeify:
       options:
         debug: true
@@ -56,7 +64,7 @@ module.exports = (grunt) ->
         src:  "./vendor/**/*.js"
         dest: "dist/vendor.js"
 
-  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-coffeeify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus"].forEach (plugin) -> grunt.loadNpmTasks plugin
+  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-coffeeify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus", "grunt-autoprefixer"].forEach (plugin) -> grunt.loadNpmTasks plugin
 
   grunt.registerTask "build", [
     "copy"
@@ -66,6 +74,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask "stylesheets", [
     "stylus"
+    "autoprefixer"
   ]
 
   grunt.registerTask "default", [
