@@ -1,4 +1,5 @@
 editor-width = 800px
+editor-header-width = editor-width - 40
 
 #editor-container
   position relative
@@ -13,8 +14,24 @@ editor-width = 800px
     display block
     overflow auto
     border none
-    width 100%
+    width editor-width
     box-sizing border-box
+
+  #editor-header, #editor-footer
+    position absolute
+    left 20px
+    z-index 1
+    height 40px
+    text-align center
+    padding 6px
+    background-color white
+    width editor-header-width
+
+  #editor-header
+    top 0
+
+  #editor-footer
+    bottom 0
 
   #loaded-document
     background #fff
