@@ -7,6 +7,7 @@ module.exports.DreamApp = DreamApp =
 
     DreamEditor.init document.getElementById "editor"
 
+  connect: ->
     DreamBox.auth (error, dreamBox) ->
       console.log "Auth'd with Dropbox:", dreamBox, error
       dreamBox.writeFile "Alice.html", document.getElementById("editor").innerHTML, (error, stat) ->
