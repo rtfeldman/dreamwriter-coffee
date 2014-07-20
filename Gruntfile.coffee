@@ -9,7 +9,7 @@ module.exports = (grunt) ->
 
       stylus:
         files: ["src/stylesheets/**/*.styl"]
-        tasks: ["stylus"]
+        tasks: ["stylesheets"]
 
       html:
         files: ["src/**/*.html"]
@@ -61,6 +61,10 @@ module.exports = (grunt) ->
   grunt.registerTask "build", [
     "copy"
     "coffeeify"
+    "stylesheets"
+  ]
+
+  grunt.registerTask "stylesheets", [
     "stylus"
   ]
 
