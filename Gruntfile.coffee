@@ -31,6 +31,10 @@ module.exports = (grunt) ->
         src:  "./src/**/*.coffee"
         dest: "dist/dreamwriter.js"
 
+      vendor:
+        src:  "./vendor/**/*.js"
+        dest: "dist/vendor.js"
+
   ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-coffeeify", "grunt-contrib-copy", "grunt-contrib-connect"].forEach (plugin) -> grunt.loadNpmTasks plugin
 
   grunt.registerTask "build", [
