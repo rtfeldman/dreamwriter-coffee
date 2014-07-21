@@ -10,21 +10,42 @@
 
   color #644b2b
 
+  #file-buttons
+    text-align center
+    margin-bottom 50px
+
+  .file-button
+    font-size 18px
+    padding-left 4%
+    padding-right 4%
+    text-shadow 1px 1px 1px #e0c59e
+    font-family Ubuntu, Verdana
+
+  #title, #outline li
+    padding 0.5em
+    min-height 1em
+    margin 0
+    cursor default
+    text-align center
+
+    text-align center
+    page-text()
+
+    &:hover
+      background-color #e0c59e
+
+  #title
+    font-size 24px
+    margin 12px
+    margin-top 30px
+    margin-bottom 0
+    box-sizing border-box
+
   #outline
     box-sizing border-box
     padding 0 12px
 
     li
-      padding 0.5em
-      font-size 1.5em
-      min-height 1em
-      margin 0
-      cursor default
-      text-align center
+      font-size 18px
       list-style-position inside
       list-style-type none
-
-      page-text()
-
-    li:hover
-      background-color #e0c59e
