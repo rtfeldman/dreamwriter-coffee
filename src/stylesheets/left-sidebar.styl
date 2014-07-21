@@ -1,3 +1,5 @@
+@require "mixins/page-text"
+
 #left-sidebar-container
   position relative
   flex-grow 1
@@ -21,6 +23,8 @@
       text-align center
       list-style-position inside
       list-style-type none
+
+      page-text()
 
     li:hover
       background-color #e0c59e
