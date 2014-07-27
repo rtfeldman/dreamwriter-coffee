@@ -4,7 +4,7 @@ dropboxApiKey = 'x1aqcubgani7y5s'
 
 # Wraps Dropbox.Client with Dreamwriter-specific
 # error handling and the like.
-module.exports.DreamBox = class DreamBox
+module.exports = class DreamBox
   @auth: (callback) ->
     client = new Dropbox.Client key: dropboxApiKey
 

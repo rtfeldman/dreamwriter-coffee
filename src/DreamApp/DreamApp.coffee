@@ -1,5 +1,5 @@
-{DreamBox}    = require "./DreamBox.coffee"
-{DreamEditor} = require "../DreamEditor/DreamEditor.coffee"
+DreamBox    = require "./DreamBox.coffee"
+DreamEditor = require "../DreamEditor/DreamEditor.coffee"
 
 module.exports.DreamApp = DreamApp =
   init: ->
