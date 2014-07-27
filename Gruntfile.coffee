@@ -25,6 +25,10 @@ module.exports = (grunt) ->
         files: ["src/fonts/*.*"]
         tasks: ["copy"]
 
+      vendor:
+        files: ["vendor/**"]
+        tasks: ["coffeeify"]
+
     connect:
       static:
         options:
