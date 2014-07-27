@@ -1,3 +1,5 @@
+extraRequires = ["mercury", "lodash"]
+
 module.exports = (grunt) ->
   grunt.initConfig
     clean: ["dist"]
@@ -63,6 +65,7 @@ module.exports = (grunt) ->
 
     coffeeify:
       options:
+        requires: extraRequires
         debug: true
         extensions: ['.js', '.coffee']
 
