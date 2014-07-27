@@ -1,21 +1,22 @@
 DreamBox    = require "./DreamBox.coffee"
 DreamEditor = require "../DreamEditor/DreamEditor.coffee"
+DreamDoc    = require "../DreamDoc/DreamDoc.coffee"
 Page        = require "./components/Page.coffee"
 mercury     = require "mercury"
+defaultDocHtml = require "./defaultDoc.coffee"
 
 module.exports.DreamApp = DreamApp =
   init: ->
     console.debug "Initializing Dreamwriter..."
 
-    DocumentOutline =
-      title: "Alice's Adventures in Wonderland"
-      words: 12345
-      chapters: [
-        {heading: "1. Down the Rabbit-Hole", words: 1234}
-        {heading: "2. The Pool of Tears",    words: 2345}
-      ]
+    # Load up the default doc
+    defaultElem = document.createElement 'div'
+    defaultElem.innerHTML = defaultDocHtml
+    defaultDoc = defaultElem.firstChild
 
-    state = mercury.struct {some: "stuff!"}
+    currentDoc = DreamDoc.fromHtmlDoc defaultDoc
+
+    state = mercury.struct {currentDoc}
     mercury.app(document.body, state, Page.render)
 
   connect: ->
