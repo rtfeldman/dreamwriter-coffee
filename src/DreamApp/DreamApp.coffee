@@ -2,7 +2,7 @@ DreamBox    = require "./DreamBox.coffee"
 DreamEditor = require "../DreamEditor/DreamEditor.coffee"
 DreamDoc    = require "../DreamDoc/DreamDoc.coffee"
 Page        = require "./components/Page.coffee"
-mercury     = require "mercury"
+React       = require "react"
 defaultDocHtml = require "./defaultDoc.coffee"
 
 module.exports.DreamApp = DreamApp =
@@ -16,8 +16,7 @@ module.exports.DreamApp = DreamApp =
 
     currentDoc = DreamDoc.fromHtmlDoc defaultDoc
 
-    state = mercury.struct {currentDoc}
-    mercury.app(document.body, state, Page.render)
+    React.renderComponent Page({currentDoc}), document.body
 
   connect: ->
     DreamBox.auth (error, dreamBox) ->

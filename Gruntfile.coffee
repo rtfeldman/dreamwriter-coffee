@@ -1,4 +1,4 @@
-extraRequires = ["mercury", "lodash"]
+extraRequires = ["react", "lodash"]
 
 module.exports = (grunt) ->
   grunt.initConfig
