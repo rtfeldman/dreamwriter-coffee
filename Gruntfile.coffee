@@ -5,10 +5,6 @@ module.exports = (grunt) ->
     clean: ["dist"]
 
     watch:
-      coffee:
-        files: ["src/**/*.coffee"]
-        tasks: ["coffeeify"]
-
       stylus:
         files: ["src/stylesheets/**/*.styl"]
         tasks: ["stylesheets"]
@@ -24,10 +20,6 @@ module.exports = (grunt) ->
       fonts:
         files: ["src/fonts/*.*"]
         tasks: ["copy"]
-
-      vendor:
-        files: ["vendor/**"]
-        tasks: ["coffeeify"]
 
     connect:
       static:
@@ -67,11 +59,14 @@ module.exports = (grunt) ->
         src: "dist/dreamwriter.css"
         dest: "dist/dreamwriter.css"
 
-    coffeeify:
+    browserify:
       options:
         requires: extraRequires
-        debug: true
+        watch: true
         extensions: ['.js', '.coffee']
+        transform: ['coffeeify']
+        bundleOptions:
+          debug: true
 
       dreamwriter:
         src:  "./src/**/*.coffee"
@@ -81,11 +76,11 @@ module.exports = (grunt) ->
         src:  "./vendor/**/*.js"
         dest: "dist/vendor.js"
 
-  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-coffeeify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus", "grunt-autoprefixer"].forEach (plugin) -> grunt.loadNpmTasks plugin
+  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-browserify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus", "grunt-autoprefixer"].forEach (plugin) -> grunt.loadNpmTasks plugin
 
   grunt.registerTask "build", [
     "copy"
-    "coffeeify"
+    "browserify"
     "stylesheets"
   ]
 
