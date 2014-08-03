@@ -3,16 +3,10 @@ module.exports = """<div id="loaded-document">
 <h3>
 ★ &nbsp;It backs up your words as you type &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<br>
 ★ &nbsp;It makes organizing your masterpiece easy&nbsp;<br>
-★ &nbsp;It works offline for airplane writing &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</h3>
+★ &nbsp;It works seamlessly online or offline&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</h3>
 <h2>Streamlined Writing</h2>
-<div>You’re a writer. Your writing tools should help you spend more time writing, and less time on chores like managing backups and revisions.</div>
-<div><br></div>
 <div>
-Dreamwriter automatically saves your work as you type, while making backup copies both on your computer and on remote servers. Sign in anywhere and pick up right where you left off.
-</div>
-<div><br></div>
-<div>
-You can also bring it up offline. (Ever seen a website do that? Try it: turn off your Internet connection and visit this page again. Great for in-flight writing!)
+Dreamwriter automatically saves your work as you type, while making backup copies both on your computer and on Dropbox. Sign in anywhere and pick up right where you left off.
 </div>
 <h2>1. Editor</h2>
 <div>This central box is your trusty Editor. Try changing this sentence to read simply “Excellent.”</div>
@@ -42,10 +36,11 @@ Mouse over a note to see what it references. Once you no longer need it, the X i
 <p><br></p>
 <p><br></p>
 <div style="text-align:center">
-    Comments? Questions? Email me!
+    Comments? Questions? Contact me!
 </div>
+<br>
 <div style="text-align:center">
-    <b>richard@dreamwriterapp.com</b>
+    <b><a href="https://twitter.com/rtfeldman">@rtfeldman</a></b> on Twitter
 </div>
 
 </div>"""
