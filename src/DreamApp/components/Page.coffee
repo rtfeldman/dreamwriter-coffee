@@ -13,7 +13,7 @@ renderPage = (currentDoc, notes) ->
     renderBackdrop()
 
     (LeftSidebar.render currentDoc)
-    (Editor.render currentDoc)
+    (Editor currentDoc)
     (RightSidebar.render notes)
   ]
 
