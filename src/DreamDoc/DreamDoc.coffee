@@ -8,7 +8,7 @@ module.exports = DreamDoc =
 
   titleFromNode: (node) ->
     titleElem = node.querySelector "h1"
-    titleElem?.innerText?.trim() ? ""
+    titleElem?.textContent?.trim() ? ""
 
   chaptersFromNode: (node) ->
     chapterHeadings = node.querySelectorAll "h2"
