@@ -2,18 +2,33 @@ LeftSidebar  = require "./LeftSidebar.coffee"
 Editor       = require "./Editor.coffee"
 RightSidebar = require "./RightSidebar.coffee"
 React        = require "react"
+DreamDoc     = require "../../DreamDoc/DreamDoc.coffee"
 
 {div} = require "../../React/dsl.coffee"
 
 module.exports = Page = React.createClass
-  render: -> renderPage @props.currentDoc, @props.notes
+  getInitialState: -> {currentDoc: @props.initialDoc}
+  render: ->
+    onMutate = (mutations, contentDocument) =>
+      @setState {currentDoc: DreamDoc.fromHtmlDoc contentDocument}
 
-renderPage = (currentDoc, notes) ->
+    renderPage @state.currentDoc, @props.notes, onMutate
+
+renderPage = (currentDoc, notes, onMutate) ->
+  editor = Editor
+    doc: currentDoc
+    mutationObserverOptions: {childList: true, attributes: true, characterData: true, subtree: true}
+    onLoad: (error) ->
+      if error
+        console.error "Attempted to load HTML document into editor but got error:", error
+
+    onMutate: onMutate
+
   div {id: "page"}, [
     renderBackdrop()
 
     (LeftSidebar.render currentDoc)
-    (Editor currentDoc)
+    editor
     (RightSidebar.render notes)
   ]
 

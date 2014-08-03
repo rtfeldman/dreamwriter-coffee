@@ -12,11 +12,10 @@ module.exports.DreamApp = DreamApp =
     # Load up the default doc
     defaultElem = document.createElement 'div'
     defaultElem.innerHTML = defaultDocHtml
-    defaultDoc = defaultElem.firstChild
 
-    currentDoc = DreamDoc.fromHtmlDoc defaultDoc
+    initialDoc = DreamDoc.fromHtmlDoc defaultElem.firstChild
 
-    React.renderComponent Page({currentDoc}), document.body
+    React.renderComponent Page({initialDoc}), document.body
 
   connect: ->
     DreamBox.auth (error, dreamBox) ->

@@ -6,9 +6,23 @@ module.exports = Editor = React.createClass
     React.DOM.iframe {id: "editor-container", key: "editor-container"}
 
   componentDidMount: ->
-    initIframe @getDOMNode(), @props.html, (error) ->
-      console.debug "Loaded HTML document with error:", error
+    contentDocument = initIframe @getDOMNode(), @props.doc.html, @props.onLoad
 
+    # Record the observer so we can disconnect it on unmount.
+    @mutationObserver = initMutationObserver contentDocument, @props.mutationObserverOptions, @props.onMutate
+
+  componentWillUnmount: ->
+    @mutationObserver.disconnect()
+    @mutationObserver.takeRecords()
+
+initMutationObserver = (target, options, handler) ->
+  observer = new MutationObserver (mutationRecords) ->
+    handler.apply null, [mutationRecords, target]
+
+  observer.observe target, options
+  observer
+
+# Initializes an iframe and returns its content document.
 initIframe = (iframeNode, html, callback) ->
   contentDocument = iframeNode.contentDocument ? iframeNode.contentWindow.document
 
@@ -18,6 +32,9 @@ initIframe = (iframeNode, html, callback) ->
 
   writeToIframeDocument contentDocument, html, callback
 
+  contentDocument
+
+# Writes the given html to the given iframe document, and fires a callback once the write is complete.
 writeToIframeDocument = (doc, html, callback = ->) ->
   switch doc.readyState
     # "complete" in Chrome/Safari, "uninitialized" in Firefox
