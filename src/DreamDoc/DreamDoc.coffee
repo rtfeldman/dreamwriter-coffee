@@ -12,4 +12,4 @@ module.exports = DreamDoc =
   chaptersFromNode: (node) ->
     chapterHeadings = node.querySelectorAll "h2"
     _.map chapterHeadings, (heading) ->
-      {heading: heading.innerText?.trim() ? ""}
+      {heading: heading.textContent?.trim() ? ""}
