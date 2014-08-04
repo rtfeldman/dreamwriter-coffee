@@ -4,13 +4,13 @@ DreamDoc    = require "../DreamDoc/DreamDoc.coffee"
 Page        = require "./components/Page.coffee"
 React       = require "react"
 AppActionDispatcher = require "./AppActionDispatcher.coffee"
+DreamStore = require "./DreamStore.coffee"
+
 
 defaultDocHtml = require "./defaultDoc.coffee"
 
 module.exports.DreamApp = DreamApp =
   init: ->
-    console.debug "Initializing Dreamwriter..."
-
     # Load up the default doc
     defaultElem = document.createElement 'div'
     defaultElem.innerHTML = defaultDocHtml
@@ -18,6 +18,8 @@ module.exports.DreamApp = DreamApp =
     initialDoc = DreamDoc.fromHtmlDoc defaultElem.firstChild
 
     React.renderComponent Page({initialDoc}), document.body
+
+    dispatcher = new AppActionDispatcher(new DreamStore())
 
   connect: ->
     DreamBox.auth (error, dreamBox) ->
