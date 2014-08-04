@@ -3,6 +3,8 @@ DreamEditor = require "../DreamEditor/DreamEditor.coffee"
 DreamDoc    = require "../DreamDoc/DreamDoc.coffee"
 Page        = require "./components/Page.coffee"
 React       = require "react"
+AppActionDispatcher = require "./AppActionDispatcher.coffee"
+
 defaultDocHtml = require "./defaultDoc.coffee"
 
 module.exports.DreamApp = DreamApp =
