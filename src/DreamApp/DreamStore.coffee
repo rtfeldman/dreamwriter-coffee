@@ -1,3 +1,8 @@
+_          = require "lodash"
+
+# TODO move this logic into vaultjs
+readOnlyMethods = ["get", "count", "each"]
+
 module.exports = class DreamStore
   constructor: ->
     storeNames = ['docs', 'snapshots', 'settings']
@@ -10,5 +15,11 @@ module.exports = class DreamStore
       stores: storeNames
       storeDefaults: { keyName: 'id' }
 
-    for storeName in storeNames
-      @[storeName] = vault.stores[storeName]
+
+    @stores = vault.stores
+    @readOnlyStores = _.object _.map @stores, (store, storeName) ->
+      readOnlyStore = _.object _.compact _.map store, (method, methodName) ->
+        if methodName in readOnlyMethods
+          [methodName, method]
+
+      [storeName, readOnlyStore]

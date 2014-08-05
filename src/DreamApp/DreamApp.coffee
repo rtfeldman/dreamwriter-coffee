@@ -17,9 +17,10 @@ module.exports.DreamApp = DreamApp =
 
     initialDoc = DreamDoc.fromHtmlDoc defaultElem.firstChild
 
-    React.renderComponent Page({initialDoc}), document.body
+    dreamStore = new DreamStore()
+    dispatcher = new AppActionDispatcher dreamStore.stores
 
-    dispatcher = new AppActionDispatcher(new DreamStore())
+    React.renderComponent Page({initialDoc, stores: dreamStore.readOnlyStores}), document.body
 
   connect: ->
     DreamBox.auth (error, dreamBox) ->
