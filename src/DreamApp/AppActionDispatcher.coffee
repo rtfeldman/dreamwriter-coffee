@@ -3,8 +3,8 @@ module.exports = class AppActionDispatcher
   constructor: (stores) ->
     queue = []
 
-    @runImmediately = (action, callback) =>
-      action.resolve stores, callback
+    @runImmediately = (action) =>
+      action.resolve stores
 
     @enqueue = (action) =>
       queue.push action
@@ -14,7 +14,12 @@ module.exports = class AppActionDispatcher
 
     dispatch = ->
       if queue.length > 0
-        queue[0].resolve stores, ->
-          queue.shift()
-          dispatch()
+        result = queue[0].resolve stores
+        Promise.resolve(result).then advanceQueue, handleError
 
+    advanceQueue = ->
+      queue.shift()
+      dispatch()
+
+    handleError = (msg) ->
+      console.error "Error dispatching action", msg
