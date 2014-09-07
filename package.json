@@ -5,6 +5,10 @@
   "scripts": {
     "test": "grunt test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rtfeldman/dreamwriter.git"
+  },
   "author": "Richard Feldman",
   "license": "MIT",
   "devDependencies": {
