@@ -4,7 +4,6 @@ module.exports = DreamDoc =
   fromHtmlDoc: (doc) ->
     title:    DreamDoc.titleFromNode doc
     chapters: DreamDoc.chaptersFromNode doc
-    html:     doc.innerHTML
 
   titleFromNode: (node) ->
     titleElem = node.querySelector "h1"
