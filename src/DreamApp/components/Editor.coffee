@@ -1,58 +1,92 @@
 {div, span} = require "../../React/dsl.coffee"
 React       = require "react"
+DreamDoc    = require "../../DreamDoc/DreamDoc.coffee"
+AppAction   = require "../../DreamApp/AppAction.coffee"
 
 module.exports = Editor = React.createClass
-  getInitialState: -> {currentDoc: undefined}
-
   render: ->
-    if @state.currentDoc
-      React.DOM.iframe {id: "editor-container", key: "editor-container"}
-    else
-      (span {}, "Loading...")
+    # Even if we have nothing to show, we need to render the iframe so we
+    # can set it up on our first mount. Render it with display:none if need be.
+    style = if @props.snapshot then null else {display: "none"}
+
+    div {id: "editor-container", style},
+      React.DOM.iframe {id: "editor-frame", spellCheck: true, key: "editor-frame", ref: "iframe"}
+
+  handleMutation: (mutations) ->
+    # We only care about mutations if we have a snapshot to work with
+    if @props.snapshot
+      contentDocument = @getContentDocument()
+      AppAction.editCurrent DreamDoc.fromHtmlDoc(contentDocument), contentDocument.documentElement.innerHTML
+
+  getContentDocument: ->
+    iframeNode = @refs.iframe.getDOMNode()
+    iframeNode.contentDocument ? iframeNode.contentWindow.document
 
   componentDidMount: ->
-    if @state.currentDoc
-      contentDocument = initIframe @getDOMNode(), @state.currentDoc.html, @props.onLoad
+    # Enable design mode on the iframe and register a mutation observer
+    contentDocument = @getContentDocument()
+    contentDocument.designMode = "on"
 
-      # Record the observer so we can disconnect it on unmount.
-      @mutationObserver = initMutationObserver contentDocument, @props.mutationObserverOptions, @props.onMutate
+    # Record the observer so we can disconnect it on unmount.
+    @mutationObserver = new MutationObserver @handleMutation
+
+    @enableMutationObserver contentDocument
+
+  componentDidUpdate: (prevProps, prevState) ->
+    # If our snapshot changed, write the new one to the iframe.
+    if prevProps.snapshot?.id isnt @props.snapshot?.id
+      # Mutation observers are expensive and unhelpful for this (massive) write
+      @withoutMutationObserver =>
+        html = @props.snapshot.html ? ""
+        writeToIframeDocument @getContentDocument(), html
+
+  withoutMutationObserver: (runLogic) ->
+    @disableMutationObserver()
+
+    try
+      runLogic()
+    finally
+      @enableMutationObserver @getContentDocument()
+
+  enableMutationObserver: (contentDocument) ->
+    unless @mutationObserver
+      throw new Error "Tried to enable #{@mutationObserver} mutationObserver"
+
+    @mutationObserver.observe contentDocument, {
+      childList: true
+      attributes: true
+      characterData: true
+      subtree: true
+    }
+
+  disableMutationObserver: ->
+    unless @mutationObserver
+      throw new Error "Tried to disable #{@mutationObserver} mutationObserver"
+
+    @mutationObserver.disconnect()
 
   componentWillUnmount: ->
-    if @state.currentDoc
-      @mutationObserver.disconnect()
+    if @mutationObserver
+      @disableMutationObserver()
       @mutationObserver.takeRecords()
 
 initMutationObserver = (target, options, handler) ->
-  observer = new MutationObserver (mutationRecords) ->
-    handler.apply null, [mutationRecords, target]
 
   observer.observe target, options
   observer
 
-# Initializes an iframe and returns its content document.
-initIframe = (iframeNode, html, callback) ->
-  contentDocument = iframeNode.contentDocument ? iframeNode.contentWindow.document
-
-  contentDocument.designMode = "on"
-
-  iframeNode.setAttribute "spellcheck", true
-
-  writeToIframeDocument contentDocument, html, callback
-
-  contentDocument
-
 # Writes the given html to the given iframe document, and fires a callback once the write is complete.
-writeToIframeDocument = (doc, html, callback = ->) ->
-  switch doc.readyState
+writeToIframeDocument = (iframeDocument, html, onSuccess = (->), onError = (->)) ->
+  switch iframeDocument.readyState
     # "complete" in Chrome/Safari, "uninitialized" in Firefox
     when "complete", "uninitialized"
       try
-        doc.open()
-        doc.write html
-        doc.close()
+        iframeDocument.open()
+        iframeDocument.write html
+        iframeDocument.close()
 
-        callback null
+        onSuccess()
       catch error
-        callback error
+        onError error
     else
-      setTimeout (-> writeToIframeDocument doc, html, callback), 0
+      setTimeout (-> writeToIframeDocument iframeDocument, html, onSuccess, onError), 0

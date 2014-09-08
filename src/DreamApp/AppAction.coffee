@@ -1,14 +1,18 @@
-# Takes a function which accepts a map of stores and
-# optionally returns a Promise.
-#
-# e.g. new AppAction(function(stores) { doStuffWithStores(); return Promise(args); });
-#
-# A dispatcher will invoke the original function later with action.resolve(stores)
-module.exports = class AppAction
-  constructor: (resolve) ->
-    unless typeof resolve == "function"
-      console.error "The AppAction constructor takes a function, not", resolve
-      throw new Error "An AppAction constructor was passed an argument that was not a function"
+Dispatcher = require "./AppActionDispatcher.coffee"
 
-    # Invoke our `resolve` function passing `stores`.
-    @resolve = (stores) -> resolve.call null, stores
+module.exports = AppAction =
+  SAVE_SNAPSHOT: "SAVE_SNAPSHOT"
+  saveSnapshot: (snapshot) ->
+    Dispatcher.dispatch {actionType: AppAction.SAVE_SNAPSHOT, snapshot}
+
+  SAVE_DOC: "SAVE_DOC"
+  saveDoc: (doc) ->
+    Dispatcher.dispatch {actionType: AppAction.SAVE_DOC, doc}
+
+  NEW_DOC: "NEW_DOC"
+  newDoc: (doc, html) ->
+    Dispatcher.dispatch {actionType: AppAction.NEW_DOC, doc, html}
+
+  EDIT_CURRENT: "EDIT_CURRENT"
+  editCurrent: (doc, html) ->
+    Dispatcher.dispatch {actionType: AppAction.EDIT_CURRENT, doc, html}

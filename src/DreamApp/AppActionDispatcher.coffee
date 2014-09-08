@@ -1,25 +1,37 @@
-# Handles enqueuing (or immediately running) actions.
-module.exports = class AppActionDispatcher
-  constructor: (stores) ->
-    queue = []
+# Handles dispatching actions
+class AppActionDispatcher
+  handlers: []
+  isDispatching: false
+  pendingPayload: null
 
-    @runImmediately = (action) =>
-      action.resolve stores
+  register: (callback) ->
+    @handlers.push
+      isPending: false
+      isHandled: false
+      callback: callback
 
-    @enqueue = (action) =>
-      queue.push action
+  dispatch: (payload) ->
+    if @isDispatching
+      throw new Error "Cannot dispatch in the middle of a dispatch!"
 
-      if queue.length == 1
-        dispatch()
+    # Initialize states to begin the dispatch
+    @handlers.forEach (handler) ->
+      handler.isPending = false
+      handler.isHandled = false
 
-    dispatch = ->
-      if queue.length > 0
-        result = queue[0].resolve stores
-        Promise.resolve(result).then advanceQueue, handleError
+    @pendingPayload = payload
+    @isDispatching  = true
 
-    advanceQueue = ->
-      queue.shift()
-      dispatch()
+    try
+      # Invoke handler callbacks
+      @handlers.forEach (handler) ->
+        unless handler.isPending
+          handler.isPending = true
+          handler.callback payload
+          handler.isHandled = true
+    finally
+      # Clean up after the dispatch
+      @pendingPayload = null
+      @isDispatching  = false
 
-    handleError = (msg) ->
-      console.error "Error dispatching action", msg
+module.exports = new AppActionDispatcher()
