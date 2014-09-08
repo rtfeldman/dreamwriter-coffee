@@ -1,19 +1,26 @@
-{div} = require "../../React/dsl.coffee"
-React = require "react"
+{div, span} = require "../../React/dsl.coffee"
+React       = require "react"
 
 module.exports = Editor = React.createClass
-  render: (state) ->
-    React.DOM.iframe {id: "editor-container", key: "editor-container"}
+  getInitialState: -> {currentDoc: undefined}
+
+  render: ->
+    if @state.currentDoc
+      React.DOM.iframe {id: "editor-container", key: "editor-container"}
+    else
+      (span {}, "Loading...")
 
   componentDidMount: ->
-    contentDocument = initIframe @getDOMNode(), @props.doc.html, @props.onLoad
+    if @state.currentDoc
+      contentDocument = initIframe @getDOMNode(), @state.currentDoc.html, @props.onLoad
 
-    # Record the observer so we can disconnect it on unmount.
-    @mutationObserver = initMutationObserver contentDocument, @props.mutationObserverOptions, @props.onMutate
+      # Record the observer so we can disconnect it on unmount.
+      @mutationObserver = initMutationObserver contentDocument, @props.mutationObserverOptions, @props.onMutate
 
   componentWillUnmount: ->
-    @mutationObserver.disconnect()
-    @mutationObserver.takeRecords()
+    if @state.currentDoc
+      @mutationObserver.disconnect()
+      @mutationObserver.takeRecords()
 
 initMutationObserver = (target, options, handler) ->
   observer = new MutationObserver (mutationRecords) ->
