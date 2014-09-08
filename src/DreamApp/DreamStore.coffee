@@ -59,24 +59,35 @@ module.exports = class DreamStore
     if snapshot.id? and (snapshot.id isnt doc.snapshotId)
       throw new Error "Cannot save doc with snapshotId #{doc.snapshotId} and snapshot with id #{snapshot.id}"
 
-    doc.id         ?= getRandomSha()
-    doc.snapshotId ?= snapshot.id ? getRandomSha()
-    snapshot.id    ?= doc.snapshotId
+    persistDocAndSnapshot = =>
+      succeed = => @listeners.emit DreamStore.CHANGE_EVENT
+      fail    = -> throw new Error "Error saving doc #{doc?.id} and snapshot #{snapshot?.id}"
 
-    currentDate = new Date()
-    
-    doc.creationTimestamp      ||= currentDate
-    snapshot.creationTimestamp ||= currentDate
-    doc.lastModified             = currentDate
-    snapshot.lastModified        = currentDate
+      doc.snapshotId ?= snapshot.id ? getRandomSha()
+      snapshot.id    ?= doc.snapshotId
 
-    succeed = => @listeners.emit DreamStore.CHANGE_EVENT
-    fail    = -> throw new Error "Error saving doc #{doc?.id} and snapshot #{snapshot?.id}"
+      currentDate = new Date()
 
-    runInParallel [
-      (onSuccess, onError) => @_stores.docs.put      doc,      onSuccess, onError
-      (onSuccess, onError) => @_stores.snapshots.put snapshot, onSuccess, onError
-    ], succeed, fail
+      doc.creationTimestamp      ||= currentDate
+      snapshot.creationTimestamp ||= currentDate
+      doc.lastModified      = currentDate
+      snapshot.lastModified = currentDate
+
+      runInParallel [
+        (onSuccess, onError) => @_stores.docs.put doc, onSuccess, onError
+        (onSuccess, onError) => @_stores.snapshots.put snapshot, onSuccess, onError
+      ], succeed, fail
+
+    if doc.id?
+      @readOnlyVersion.getDoc doc.id, (existingDoc) =>
+        if existingDoc.lastModified.getTime() > doc.lastModified.getTime()
+          # TODO handle this by re-rendering etc
+          alert "Your document is out of sync! Please refresh."
+        else
+          persistDocAndSnapshot()
+    else
+      doc.id = getRandomSha()
+      persistDocAndSnapshot()
 
   newDoc: (doc, html) =>
     unless doc
