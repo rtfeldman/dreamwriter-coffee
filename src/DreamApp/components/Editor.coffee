@@ -12,7 +12,7 @@ module.exports = Editor = React.createClass
     div {id: "editor-container", style},
       React.DOM.iframe {id: "editor-frame", spellCheck: true, key: "editor-frame", ref: "iframe"}
 
-  handleMutation: (mutations) ->
+  handleMutations: (mutations) ->
     # We only care about mutations if we have a snapshot to work with
     if @props.snapshot
       contentDocument = @getContentDocument()
@@ -28,7 +28,7 @@ module.exports = Editor = React.createClass
     contentDocument.designMode = "on"
 
     # Record the observer so we can disconnect it on unmount.
-    @mutationObserver = new MutationObserver @handleMutation
+    @mutationObserver = new MutationObserver @handleMutations
 
     @enableMutationObserver contentDocument
 
@@ -71,7 +71,6 @@ module.exports = Editor = React.createClass
       @mutationObserver.takeRecords()
 
 initMutationObserver = (target, options, handler) ->
-
   observer.observe target, options
   observer
 
