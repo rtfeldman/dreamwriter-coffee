@@ -23,16 +23,16 @@ module.exports.DreamApp = DreamApp =
           dreamStore.newDoc payload.doc, payload.html
         when AppAction.EDIT_CURRENT
           dreamStore.saveDocWithSnapshot payload.doc, {id: payload.doc.snapshotId, html: payload.html}
+        when AppAction.OPEN_DOC
+          dreamStore.openDoc payload.doc
         else
           throw new Error("Unknown AppAction actionType: \"#{payload.actionType}\"")
 
     React.renderComponent Page({dreamStore: dreamStore.readOnlyVersion}), document.body
 
     dreamStore.readOnlyVersion.getCurrentDoc ((currentDoc) ->
-      if currentDoc? and false
-        console.log "Got a current doc! Emitting open..."
-        # Have it broadcast that it's opening its current doc.
-        dreamStore.listeners.emit DreamStore.OPEN_EVENT
+      if currentDoc?
+        AppAction.openDoc currentDoc
       else
         # Load up the default doc, and open that.
         defaultElem = document.createElement 'div'

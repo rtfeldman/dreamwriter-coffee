@@ -13,6 +13,10 @@ module.exports = AppAction =
   newDoc: (doc, html) ->
     Dispatcher.dispatch {actionType: AppAction.NEW_DOC, doc, html}
 
+  OPEN_DOC: "OPEN_DOC"
+  openDoc: (doc) ->
+    Dispatcher.dispatch {actionType: AppAction.OPEN_DOC, doc}
+
   EDIT_CURRENT: "EDIT_CURRENT"
   editCurrent: (doc, html) ->
     Dispatcher.dispatch {actionType: AppAction.EDIT_CURRENT, doc, html}

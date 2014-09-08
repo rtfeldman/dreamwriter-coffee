@@ -2,6 +2,7 @@
 React       = require "react"
 DreamDoc    = require "../../DreamDoc/DreamDoc.coffee"
 AppAction   = require "../../DreamApp/AppAction.coffee"
+_           = require "lodash"
 
 module.exports = Editor = React.createClass
   render: ->
@@ -16,7 +17,8 @@ module.exports = Editor = React.createClass
     # We only care about mutations if we have a snapshot to work with
     if @props.snapshot
       contentDocument = @getContentDocument()
-      AppAction.editCurrent DreamDoc.fromHtmlDoc(contentDocument), contentDocument.documentElement.innerHTML
+      doc = _.defaults DreamDoc.fromHtmlDoc(contentDocument), @props.doc
+      AppAction.editCurrent doc, contentDocument.documentElement.innerHTML
 
   getContentDocument: ->
     iframeNode = @refs.iframe.getDOMNode()

@@ -42,14 +42,12 @@ module.exports = class DreamStore
     @readOnlyVersion = new ReadOnlyDreamStore this
 
   openDoc: (doc, onSuccess, onError) =>
-    @_stores.settings.put "currentDocId", doc.id, (=>
-      @listeners.emit DreamStore.OPEN_EVENT
+    @putSetting "currentDocId", doc.id, (=>
+      @listeners.emit DreamStore.OPEN_EVENT, doc
     ), onError
 
-  saveSnapshot: (snapshot) =>
-    console.debug "Saving snapshot:", snapshot.length, "to:", @_stores.snapshots
-    return
-    @_stores.snapshots.put snapshot, => @listeners.emit DreamStore.CHANGE_EVENT
+  putSetting: (id, value, onSuccess, onError) =>
+    @_stores.settings.put {id, value}, onSuccess, onError
 
   saveDocWithSnapshot: (doc, snapshot) =>
     unless doc?
@@ -58,8 +56,12 @@ module.exports = class DreamStore
     unless snapshot?
       throw new Error "Invalid snapshot: #{snapshot}"
 
-    doc.id      ||= getRandomSha()
-    snapshot.id ||= getRandomSha()
+    if snapshot.id? and (snapshot.id isnt doc.snapshotId)
+      throw new Error "Cannot save doc with snapshotId #{doc.snapshotId} and snapshot with id #{snapshot.id}"
+
+    doc.id         ?= getRandomSha()
+    doc.snapshotId ?= snapshot.id ? getRandomSha()
+    snapshot.id    ?= doc.snapshotId
 
     currentDate = new Date()
     
@@ -75,11 +77,6 @@ module.exports = class DreamStore
       (onSuccess, onError) => @_stores.docs.put      doc,      onSuccess, onError
       (onSuccess, onError) => @_stores.snapshots.put snapshot, onSuccess, onError
     ], succeed, fail
-
-  saveDoc: (doc) =>
-    console.debug "Saving doc:", doc, "to:", @_stores.docs
-    return
-    @_stores.docs.put doc, => @listeners.emit DreamStore.CHANGE_EVENT
 
   newDoc: (doc, html) =>
     unless doc

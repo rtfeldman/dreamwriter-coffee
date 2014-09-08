@@ -14,16 +14,29 @@ module.exports = Page = React.createClass
 
   componentDidMount: ->
     @props.dreamStore.listeners.on DreamStore.CHANGE_EVENT, @handleStoreChange
+    @props.dreamStore.listeners.on DreamStore.OPEN_EVENT,   @handleStoreOpen
 
   componentWillUnmount: ->
     @props.dreamStore.off DreamStore.CHANGE_EVENT @handleStoreChange
+    @props.dreamStore.off DreamStore.OPEN_EVENT   @handleStoreOpen
 
   componentShouldUpdate: (nextProps, nextState) ->
     (@state.currentSnapshot.lastModified isnt nextState.currentSnapshot.lastModified) or
     (@state.currentDoc.lastModified      isnt nextState.currentDoc.lastModified)
 
   render: ->
-    renderPage @state.currentDoc, @state.currentSnapshot, @state.currentNotes
+    div {id: "page"}, [
+      (div {className: "backdrop", key: "backdrop"}, [
+        (div {key: "backdrop-tl", className: "backdrop-quadrant backdrop-top backdrop-left"})
+        (div {key: "backdrop-bl", className: "backdrop-quadrant backdrop-bottom backdrop-left"})
+        (div {key: "backdrop-tr", className: "backdrop-quadrant backdrop-top backdrop-right"})
+        (div {key: "backdrop-br", className: "backdrop-quadrant backdrop-bottom backdrop-right"})
+      ])
+
+      (LeftSidebar.render @state.currentDoc)
+      (Editor {doc: @state.currentDoc, snapshot: @state.currentSnapshot})
+      (RightSidebar.render @state.currentNotes)
+    ]
 
   handleStoreChange: ->
     {dreamStore} = @props
@@ -41,33 +54,11 @@ module.exports = Page = React.createClass
       else
         @setState {currentDoc: undefined, currentSnapshot: undefined}
 
-  handleStoreOpen: ->
+  handleStoreOpen: (doc) ->
     {dreamStore} = @props
 
-    # TODO can we just pass the new doc through the Open event?
-    dreamStore.getCurrentDoc (doc) =>
-      if doc
-        dreamStore.getSnapshot doc.snapshotId, (snapshot) =>
-          @setState {currentDoc: doc, currentSnapshot: snapshot}
-      else
-        @setState {currentDoc: undefined, currentSnapshot: undefined}
-
-renderPage = (doc, snapshot, notes) ->
-  editor = Editor
-    snapshot: snapshot
-
-  div {id: "page"}, [
-    renderBackdrop()
-
-    (LeftSidebar.render doc)
-    editor
-    (RightSidebar.render notes)
-  ]
-
-renderBackdrop = ->
-  (div {className: "backdrop", key: "backdrop"}, [
-    (div {key: "backdrop-tl", className: "backdrop-quadrant backdrop-top backdrop-left"})
-    (div {key: "backdrop-bl", className: "backdrop-quadrant backdrop-bottom backdrop-left"})
-    (div {key: "backdrop-tr", className: "backdrop-quadrant backdrop-top backdrop-right"})
-    (div {key: "backdrop-br", className: "backdrop-quadrant backdrop-bottom backdrop-right"})
-  ])
+    if doc
+      dreamStore.getSnapshot doc.snapshotId, (snapshot) =>
+        @setState {currentDoc: doc, currentSnapshot: snapshot}
+    else
+      @setState {currentDoc: undefined, currentSnapshot: undefined}
