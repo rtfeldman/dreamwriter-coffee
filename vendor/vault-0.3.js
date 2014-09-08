@@ -315,6 +315,7 @@
           }
         } catch (err) {
           console.error("Could not execute " + storeName + "." + method + " with value:");
+          console.error(err);
           console.error(value);
         }
         request.onsuccess = onSuccess;
