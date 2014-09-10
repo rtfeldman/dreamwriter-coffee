@@ -40,7 +40,7 @@ module.exports.DreamApp = DreamApp =
 
         initialDoc = DreamDoc.fromHtmlDoc defaultElem.firstChild
 
-        AppAction.newDoc initialDoc, defaultElem.firstChild.innerHTML
+        AppAction.newDoc initialDoc, DreamDoc.wrapInDocumentMarkup(defaultElem.firstChild.innerHTML)
     ), -> console.error "Could not access store to check initial value of currentDoc."
 
   connect: ->
