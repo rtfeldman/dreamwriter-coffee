@@ -58,7 +58,9 @@ module.exports = Page = React.createClass
     {dreamStore} = @props
 
     if doc
+      # TODO parallelize this
       dreamStore.getSnapshot doc.snapshotId, (snapshot) =>
-        @setState {currentDoc: doc, currentSnapshot: snapshot}
+        dreamStore.getSnapshot doc.notesId, (notes) =>
+          @setState {currentDoc: doc, currentSnapshot: snapshot, currentNotes: notes}
     else
       @setState {currentDoc: undefined, currentSnapshot: undefined}
