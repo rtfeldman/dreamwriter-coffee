@@ -22,14 +22,14 @@ Click this paragraph, then <i>insert</i> and then <i>chapter</i>. (Note the auto
 <div><br></div>
 <div>
 To rename this document, simply scroll to the top and edit the title heading. If you like word counts, try the “stats” button!</div>
-<h2>3. Notes</h2><div>Try highlighting this sentence and clicking <i>add note</i> in the lower right. Then type “this was helpful” and click back here.</div>
+<h2>3. Notes</h2><div>Try typing “Note to self about Chapter 1” into the area to the right of the editor.</div>
 <div><br></div>
 <div>
-The note you just added will exist in the margin only. It will not alter the text of the document, even when printing. The arrows next to <i>add note</i> will cycle through all your notes.
+The note you just added will exist in the margin only. It will not alter the text of the document, even when printing.
 </div>
 <div><br></div>
 <div>
-Mouse over a note to see what it references. Once you no longer need it, the X in its corner will delete it.
+Use this space to jot down as many notes as you need! If you need more space, a scroll bar will appear.
 </div>
 <h2>Happy writing!</h2>
 <div style="text-align:center"><img src="images/dlogo.png"></div>
