@@ -20,27 +20,32 @@ module.exports.DreamApp = DreamApp =
         when AppAction.SAVE_SNAPSHOT
           dreamStore.saveSnapshot payload.snapshot
         when AppAction.NEW_DOC
-          dreamStore.newDoc payload.doc, payload.html
+          docElem = document.createElement 'div'
+          docElem.innerHTML = "<div id='loaded-content'>#{payload.html}</div>"
+
+          dreamStore.newDoc DreamDoc.fromHtmlDoc(docElem.firstChild),
+            DreamDoc.wrapInDocumentMarkup(docElem.firstChild.innerHTML)
         when AppAction.EDIT_CURRENT
           dreamStore.saveDocWithSnapshot payload.doc, {id: payload.doc.snapshotId, html: payload.html}
         when AppAction.OPEN_DOC
           dreamStore.openDoc payload.doc
+        when AppAction.SYNC_DOC_LIST
+          dreamStore.syncDocList()
         else
           throw new Error("Unknown AppAction actionType: \"#{payload.actionType}\"")
 
     React.renderComponent Page({dreamStore: dreamStore.readOnlyVersion}), document.body
 
+    # Kick this off now, so it can run while we're finishing our init.
+    AppAction.syncDocList()
+
     dreamStore.readOnlyVersion.getCurrentDoc ((currentDoc) ->
       if currentDoc?
+        # We have an existing currentDoc, so open that.
         AppAction.openDoc currentDoc
       else
-        # Load up the default doc, and open that.
-        defaultElem = document.createElement 'div'
-        defaultElem.innerHTML = defaultDocHtml
-
-        initialDoc = DreamDoc.fromHtmlDoc defaultElem.firstChild
-
-        AppAction.newDoc initialDoc, DreamDoc.wrapInDocumentMarkup(defaultElem.firstChild.innerHTML)
+        # Create a new doc using the default doc HTML, and open that.
+        AppAction.newDoc defaultDocHtml
     ), -> console.error "Could not access store to check initial value of currentDoc."
 
   connect: ->

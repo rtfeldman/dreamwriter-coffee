@@ -10,6 +10,6 @@ _     = require "lodash"
 #
 # ...instead of calling React.DOM.div {id: "foo"} etc.
 
-supportedElems = ["a", "div", "span", "ul", "ol", "li"]
+supportedElems = ["a", "b", "i", "div", "span", "ul", "ol", "li"]
 module.exports = _.object _.map supportedElems, (elem) ->
   [elem, React.DOM[elem].bind(React.DOM)]

@@ -1,7 +1,11 @@
-Outline = require "./Outline.coffee"
-React   = require "react"
+Outline   = require "./Outline.coffee"
+React     = require "react"
+AppAction = require "../AppAction.coffee"
+_         = require "lodash"
 
-{div, span, ul, li} = require "../../React/dsl.coffee"
+defaultNewDocHtml = require "./../defaultNewDoc.coffee"
+
+{div, span, ul, b, li} = require "../../React/dsl.coffee"
 
 module.exports = LeftSidebar = React.createClass
   getInitialState: -> {showOpenMenu: false}
@@ -10,17 +14,32 @@ module.exports = LeftSidebar = React.createClass
     {currentDoc} = @props
 
     if @state.showOpenMenu
+      docList = if @props.docs
+        (_.map @props.docs, (doc) =>
+          if doc.id is currentDoc.id
+            (div {className: "open-entry disabled"}, currentDoc.title)
+          else
+            (div {className: "open-entry", onClick: @getOpenDocHandler(doc)}, doc.title)
+        )
+      else
+        (div {}, "Syncing...")
+
       (div {id: "left-sidebar-container", className: "sidebar", key: "left-sidebar-container"}, [
         (div {key: "left-sidebar-header", id: "left-sidebar-header", className: "sidebar-header"}, [
-          (span {className: "sidebar-header-control", key: "cancel", onClick: @getOpenClickHandler(false)}, ["cancel"])
+          (span {className: "sidebar-header-control", key: "cancel", onClick: @getOpenMenuClickHandler(false)}, ["cancel"])
         ])
-        (div {}, "TODO: list open files here")
+        (div {className: "open-entry", onClick: @handleShowOpenFile}, [
+          (span {}, "A ")
+          (b    {}, ".html")
+          (span {}, " file from your computer...")
+        ])
+        docList
       ])
     else if currentDoc
       (div {id: "left-sidebar-container", className: "sidebar", key: "left-sidebar-container"}, [
         (div {key: "left-sidebar-header", id: "left-sidebar-header", className: "sidebar-header"}, [
-          (span {className: "sidebar-header-control", key: "new"}, ["new"])
-          (span {className: "sidebar-header-control", key: "open", onClick: @getOpenClickHandler(true)}, ["open"])
+          (span {className: "sidebar-header-control", key: "new",  onClick: @handleNewDoc}, ["new"])
+          (span {className: "sidebar-header-control", key: "open", onClick: @getOpenMenuClickHandler(true)}, ["open"])
         ])
 
         (div {id: "title", key: "title"}, [currentDoc.title])
@@ -33,6 +52,20 @@ module.exports = LeftSidebar = React.createClass
     else
       (span {})
 
-  getOpenClickHandler: (showOpenMenu) ->
+  getOpenDocHandler: (doc) ->
     (event) =>
-      @setState {showOpenMenu}
+      AppAction.openDoc(doc)
+
+      # Sync the doc list because currentDoc will be changing, so we can
+      # no longer rely on it for the most current title for that doc.
+      AppAction.syncDocList()
+
+      @setState {showOpenMenu: false}
+
+  handleNewDoc: -> AppAction.newDoc defaultNewDocHtml
+
+  handleShowOpenFile: ->
+    console.log "TODO show file chooser"
+
+  getOpenMenuClickHandler: (showOpenMenu) ->
+    (event) => @setState {showOpenMenu}

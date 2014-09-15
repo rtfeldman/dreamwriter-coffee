@@ -6,6 +6,7 @@ DreamDoc     = require "../../DreamDoc/DreamDoc.coffee"
 Dispatcher   = require "../AppActionDispatcher.coffee"
 AppAction    = require "../AppAction.coffee"
 DreamStore   = require "../DreamStore.coffee"
+_            = require "lodash"
 
 {div} = require "../../React/dsl.coffee"
 
@@ -13,16 +14,28 @@ module.exports = Page = React.createClass
   getInitialState: -> {currentDoc: undefined, currentSnapshot: undefined, currentNotes: undefined}
 
   componentDidMount: ->
-    @props.dreamStore.listeners.on DreamStore.CHANGE_EVENT, @handleStoreChange
-    @props.dreamStore.listeners.on DreamStore.OPEN_EVENT,   @handleStoreOpen
+    @props.dreamStore.listeners.on DreamStore.CHANGE_EVENT,        @handleStoreChange
+    @props.dreamStore.listeners.on DreamStore.OPEN_EVENT,          @handleStoreOpen
+    @props.dreamStore.listeners.on DreamStore.NEW_DOC_EVENT,       @handleNewDocEvent
+    @props.dreamStore.listeners.on DreamStore.SYNC_DOC_LIST_EVENT, @handleDocListChange
 
   componentWillUnmount: ->
-    @props.dreamStore.off DreamStore.CHANGE_EVENT @handleStoreChange
-    @props.dreamStore.off DreamStore.OPEN_EVENT   @handleStoreOpen
+    @props.dreamStore.off DreamStore.CHANGE_EVENT        @handleStoreChange
+    @props.dreamStore.off DreamStore.OPEN_EVENT          @handleStoreOpen
+    @props.dreamStore.off DreamStore.NEW_DOC_EVENT       @handleNewDocEvent
+    @props.dreamStore.off DreamStore.SYNC_DOC_LIST_EVENT @handleDocListChange
 
-  componentShouldUpdate: (nextProps, nextState) ->
+  shouldComponentUpdate: (nextProps, nextState) ->
+    # TODO fix this!
+    return true
+
+    currentDocs = @state.docs    ? {}
+    nextDocs    = nextState.docs ? {}
+
     (@state.currentSnapshot.lastModified isnt nextState.currentSnapshot.lastModified) or
-    (@state.currentDoc.lastModified      isnt nextState.currentDoc.lastModified)
+    (@state.currentDoc.lastModified      isnt nextState.currentDoc.lastModified) or
+    (_.keys(currentDocs) isnt _.keys(nextDocs)) or
+    (_.any currentDocs, (doc) -> doc.lastModified isnt nextDocs[doc.id]?.lastModified)
 
   render: ->
     div {id: "page"}, [
@@ -33,16 +46,13 @@ module.exports = Page = React.createClass
         (div {key: "backdrop-br", className: "backdrop-quadrant backdrop-bottom backdrop-right"})
       ])
 
-      (LeftSidebar {currentDoc: @state.currentDoc})
+      (LeftSidebar {currentDoc: @state.currentDoc, docs: @state.docs})
       (Editor {doc: @state.currentDoc, snapshot: @state.currentSnapshot})
       (RightSidebar.render @state.currentNotes)
     ]
 
   handleStoreChange: ->
     {dreamStore} = @props
-
-    # TODO add granularity to store event listeners. We want to do different things
-    # depending on whether current doc changes, other docs change, etc.
 
     # Refresh doc and snapshot
     # TODO parallelize this
@@ -64,3 +74,11 @@ module.exports = Page = React.createClass
           @setState {currentDoc: doc, currentSnapshot: snapshot, currentNotes: notes}
     else
       @setState {currentDoc: undefined, currentSnapshot: undefined}
+
+  handleNewDocEvent: (doc) ->
+    AppAction.syncDocList()
+
+    # TODO just have the store emit something more specific like "current doc changed"
+    @handleStoreChange()
+
+  handleDocListChange: (docs) -> @setState {docs}

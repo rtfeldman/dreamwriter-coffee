@@ -1,4 +1,4 @@
-module.exports = """<div id="loaded-document">
+module.exports = """
 <h1>This is Dreamwriter</h1>
 <h3>
 ★ &nbsp;It backs up your words as you type &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<br>
@@ -41,6 +41,4 @@ Use this space to jot down as many notes as you need! If you need more space, a 
 <br>
 <div style="text-align:center">
     <b><a href="https://twitter.com/rtfeldman">@rtfeldman</a></b> on Twitter
-</div>
-
 </div>"""

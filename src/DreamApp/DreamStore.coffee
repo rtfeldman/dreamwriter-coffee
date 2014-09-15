@@ -24,8 +24,10 @@ runInParallel = (continuations = [], onSuccess = (->), onError = (-> throw new E
 module.exports = class DreamStore
   listeners: new EventEmitter()
 
-  @CHANGE_EVENT: "changeEvent"
-  @OPEN_EVENT:   "openEvent"
+  @CHANGE_EVENT:        "changeEvent"
+  @OPEN_EVENT:          "openEvent"
+  @NEW_DOC_EVENT:       "newDocEvent"
+  @SYNC_DOC_LIST_EVENT: "syncDocListEvent"
 
   constructor: ->
     storeNames = ['docs', 'snapshots', 'settings']
@@ -89,6 +91,13 @@ module.exports = class DreamStore
       doc.id = getRandomSha()
       persistDocAndSnapshot()
 
+  syncDocList: =>
+    succeed = (docs) => @listeners.emit DreamStore.SYNC_DOC_LIST_EVENT, docs
+    fail    =        -> throw new Error "Error syncing doc list"
+
+    # TODO check for new content with Dropbox.
+    @readOnlyVersion.listDocs succeed, fail
+
   newDoc: (doc, html) =>
     unless doc
       throw new Error "Cannot create new doc from #{doc} doc."
@@ -101,8 +110,8 @@ module.exports = class DreamStore
     docRecord      = _.defaults {snapshotId: snapshotRecord.id, notesId: notesRecord.id}, doc, newRecord()
     settingsRecord = {id: "currentDocId", value: docRecord.id}
 
-    succeed = => @listeners.emit DreamStore.CHANGE_EVENT
-    fail    = -> throw new Error "Error saving new doc #{doc}"
+    succeed = => @listeners.emit DreamStore.NEW_DOC_EVENT, doc
+    fail    = -> throw new Error "Error saving new doc #{JSON.stringify doc}"
 
     runInParallel [
       (onSuccess, onError) => @_stores.docs.put      docRecord,      onSuccess, onError
@@ -112,7 +121,7 @@ module.exports = class DreamStore
     ], succeed, fail
 
 # TODO move this logic into vaultjs
-readOnlyMethods = ["get", "count", "each"]
+readOnlyMethods = ["get", "count", "each", "db", "name"]
 
 class ReadOnlyDreamStore
   constructor: (dreamStore) ->
@@ -143,3 +152,21 @@ class ReadOnlyDreamStore
       else
         onSuccess()
     ), onError
+
+  listDocs: (onSuccess, onError) =>
+    listStoreContents @_stores.docs, onSuccess, onError
+
+# TODO move this to vaultjs.list()
+listStoreContents = (store, onSuccess = (->), onError = (->)) ->
+  results = {}
+
+  cursorIterator = (event) ->
+    cursor = event.target.result
+
+    if cursor
+      results[cursor.key] = cursor.value
+      cursor.continue()
+    else
+      onSuccess results
+
+  store.db.openCursor store.name, cursorIterator, onError
