@@ -33,7 +33,7 @@ module.exports = Page = React.createClass
         (div {key: "backdrop-br", className: "backdrop-quadrant backdrop-bottom backdrop-right"})
       ])
 
-      (LeftSidebar.render @state.currentDoc)
+      (LeftSidebar {currentDoc: @state.currentDoc})
       (Editor {doc: @state.currentDoc, snapshot: @state.currentSnapshot})
       (RightSidebar.render @state.currentNotes)
     ]
