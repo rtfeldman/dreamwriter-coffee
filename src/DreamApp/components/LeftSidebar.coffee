@@ -17,7 +17,7 @@ module.exports = LeftSidebar = React.createClass
       docList = if @props.docs
         (_.map @props.docs, (doc) =>
           if doc.id is currentDoc.id
-            (div {className: "open-entry disabled"}, currentDoc.title)
+            (div {className: "open-entry current"}, currentDoc.title)
           else
             (div {className: "open-entry", onClick: @getOpenDocHandler(doc)}, doc.title)
         )
@@ -28,12 +28,14 @@ module.exports = LeftSidebar = React.createClass
         (div {key: "left-sidebar-header", id: "left-sidebar-header", className: "sidebar-header"}, [
           (span {className: "sidebar-header-control", key: "cancel", onClick: @getOpenMenuClickHandler(false)}, ["cancel"])
         ])
-        (div {className: "open-entry", onClick: @handleShowOpenFile}, [
-          (span {}, "A ")
-          (b    {}, ".html")
-          (span {}, " file from your computer...")
+        (div id: "open", [
+          (div {className: "open-entry", onClick: @handleShowOpenFile}, [
+            (span {}, "A ")
+            (b    {}, ".html")
+            (span {}, " file from your computer...")
+          ])
+          docList
         ])
-        docList
       ])
     else if currentDoc
       (div {id: "left-sidebar-container", className: "sidebar", key: "left-sidebar-container"}, [
