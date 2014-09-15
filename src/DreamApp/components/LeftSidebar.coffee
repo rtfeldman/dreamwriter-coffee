@@ -15,11 +15,22 @@ module.exports = LeftSidebar = React.createClass
 
     if @state.showOpenMenu
       docList = if @props.docs
-        (_.map @props.docs, (doc) =>
+        # Use the currentDoc where available, as it may have more up-to-date info.
+        docsWithCurrent = _.map @props.docs, (doc) ->
           if doc.id is currentDoc.id
-            (div {className: "open-entry current"}, currentDoc.title)
+            currentDoc
           else
-            (div {className: "open-entry", onClick: @getOpenDocHandler(doc)}, doc.title)
+            doc
+
+        sortedDocs = _.sortBy docsWithCurrent, (doc) => -doc.lastModified.getTime()
+
+        (sortedDocs.map (doc) =>
+          className = if doc.id is currentDoc.id
+            "open-entry current"
+          else
+            "open-entry"
+
+          (div {className, onClick: @getOpenDocHandler(doc)}, doc.title)
         )
       else
         (div {}, "Syncing...")
