@@ -41,6 +41,7 @@ module.exports = LeftSidebar = React.createClass
           (span {className: "sidebar-header-control", key: "cancel", onClick: @getOpenMenuClickHandler(false)}, ["cancel"])
         ])
         (div id: "open", [
+          (React.DOM.input {id: "openFileChooser", value: "", ref: "openFileChooser", onChange: @handleFileChooserChange, type: "file", multiple: "true", accept: "text/html"})
           (div {className: "open-entry", onClick: @handleShowOpenFile}, [
             (span {}, "A ")
             (b    {}, ".html")
@@ -76,10 +77,41 @@ module.exports = LeftSidebar = React.createClass
 
       @setState {showOpenMenu: false}
 
-  handleNewDoc: -> AppAction.newDoc defaultNewDocHtml
+  handleNewDoc: ->
+    AppAction.newDoc DreamDoc.fromHtmlStr(defaultNewDocHtml), defaultNewDocHtml
 
   handleShowOpenFile: ->
-    console.log "TODO show file chooser"
+    # Dispatch a click event to the file chooser, so it displays an Open dialog.
+    @refs.openFileChooser.getDOMNode().click()
+
+  handleFileChooserChange: (event) ->
+    files = @refs.openFileChooser.getDOMNode().files
+
+    for file in files
+      docFromFile file, (doc, html) ->
+        AppAction.newDoc doc, html
+
+    # TODO don't do this until we've actually finished reading all the files
+    AppAction.syncDocList()
+
+    @setState {showOpenMenu: false}
 
   getOpenMenuClickHandler: (showOpenMenu) ->
     (event) => @setState {showOpenMenu}
+
+docFromFile = (file, onSuccess, onError) ->
+  reader = new FileReader
+
+  reader.onload = (response) ->
+    fileName     = file.name ? file.fileName
+    lastModified = if file.lastModifiedDate? then (new Date file.lastModifiedDate) else undefined
+    html         = response.target.result
+
+    doc = DreamDoc.fromFile fileName, lastModified, html
+
+    if doc
+      onSuccess doc, html
+    else
+      onError()
+
+  reader.readAsText file

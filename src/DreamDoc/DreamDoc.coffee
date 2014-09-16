@@ -1,9 +1,25 @@
 _ = require "lodash"
 
+# Note: must use [\s\S]* instead of .* because in JavaScript RegExes the dot never matches newlines, even with /m
+htmlBody = /<\s*body[^>]*>([\s\S]*)<\s*\/\s*body\s*>/igm
+
 module.exports = DreamDoc =
   fromHtmlDoc: (doc) ->
     title:    DreamDoc.titleFromNode doc
     chapters: DreamDoc.chaptersFromNode doc
+
+  fromHtmlStr: (html) ->
+    DreamDoc.fromHtmlDoc (DreamDoc.htmlStrToHtmlDoc html)
+
+  htmlStrToHtmlDoc: (html) ->
+    docElem = document.createElement 'div'
+    docElem.innerHTML = "<div id='loaded-content'>#{html}</div>"
+
+    docElem.firstChild
+
+  fromFile: (fileName, lastModified, html) ->
+    _.defaults DreamDoc.fromHtmlStr(html), 
+      title: fileName.replace(/.html$/, '').replace('_', ' ')
 
   titleFromNode: (node) ->
     titleElem = node.querySelector "h1"
