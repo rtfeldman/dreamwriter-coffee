@@ -2,6 +2,7 @@ Outline   = require "./Outline.coffee"
 React     = require "react"
 AppAction = require "../AppAction.coffee"
 DreamDoc  = require "../../DreamDoc/DreamDoc.coffee"
+saveAs    = require "../../../vendor/FileSaver.js"
 _         = require "lodash"
 
 defaultNewDocHtml = require "./../defaultNewDoc.coffee"
@@ -59,7 +60,7 @@ module.exports = LeftSidebar = React.createClass
 
         (div {id: "title", key: "title"}, [currentDoc.title])
         (div {id: "file-buttons", key: "file-buttons"}, [
-          (span {className: "file-button", key: "download"}, ["download"])
+          (span {className: "file-button", key: "download", onClick: @handleDownload}, ["download"])
           (span {className: "file-button", key: "stats"}, ["stats"])
         ])
         (Outline {key: "outline", chapters: currentDoc.chapters})
@@ -77,12 +78,18 @@ module.exports = LeftSidebar = React.createClass
 
       @setState {showOpenMenu: false}
 
-  handleNewDoc: ->
-    AppAction.newDoc DreamDoc.fromHtmlStr(defaultNewDocHtml), defaultNewDocHtml
+  handleNewDoc: -> AppAction.newDoc DreamDoc.fromHtmlStr(defaultNewDocHtml), defaultNewDocHtml
 
   handleShowOpenFile: ->
     # Dispatch a click event to the file chooser, so it displays an Open dialog.
     @refs.openFileChooser.getDOMNode().click()
+
+  handleDownload: ->
+    html     = @props.currentSnapshot.html
+    filename = @props.currentDoc.title.replace(/[\/\\<>?|":*]/g, '_') + ".html" # Strip out illegal filename chars
+    type     = "text/plain;charset=#{document.characterSet}"
+
+    saveAs new Blob([html], {type}), filename
 
   handleFileChooserChange: (event) ->
     files = @refs.openFileChooser.getDOMNode().files
