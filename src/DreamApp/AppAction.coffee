@@ -10,8 +10,8 @@ module.exports = AppAction =
     Dispatcher.dispatch {actionType: AppAction.SAVE_DOC, doc}
 
   NEW_DOC: "NEW_DOC"
-  newDoc: (html) ->
-    Dispatcher.dispatch {actionType: AppAction.NEW_DOC, html}
+  newDoc: (doc, html) ->
+    Dispatcher.dispatch {actionType: AppAction.NEW_DOC, doc, html}
 
   OPEN_DOC: "OPEN_DOC"
   openDoc: (doc) ->

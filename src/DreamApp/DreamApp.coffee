@@ -20,11 +20,7 @@ module.exports.DreamApp = DreamApp =
         when AppAction.SAVE_SNAPSHOT
           dreamStore.saveSnapshot payload.snapshot
         when AppAction.NEW_DOC
-          docElem = document.createElement 'div'
-          docElem.innerHTML = "<div id='loaded-content'>#{payload.html}</div>"
-
-          dreamStore.newDoc DreamDoc.fromHtmlDoc(docElem.firstChild),
-            DreamDoc.wrapInDocumentMarkup(docElem.firstChild.innerHTML)
+          dreamStore.newDoc payload.doc, DreamDoc.wrapInDocumentMarkup(payload.html)
         when AppAction.EDIT_CURRENT
           dreamStore.saveDocWithSnapshot payload.doc, {id: payload.doc.snapshotId, html: payload.html}
         when AppAction.OPEN_DOC
@@ -45,7 +41,7 @@ module.exports.DreamApp = DreamApp =
         AppAction.openDoc currentDoc
       else
         # Create a new doc using the default doc HTML, and open that.
-        AppAction.newDoc defaultDocHtml
+        AppAction.newDoc DreamDoc.fromHtmlStr(defaultDocHtml), defaultDocHtml
     ), -> console.error "Could not access store to check initial value of currentDoc."
 
   connect: ->

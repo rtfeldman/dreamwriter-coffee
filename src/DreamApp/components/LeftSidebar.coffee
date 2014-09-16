@@ -1,6 +1,7 @@
 Outline   = require "./Outline.coffee"
 React     = require "react"
 AppAction = require "../AppAction.coffee"
+DreamDoc  = require "../../DreamDoc/DreamDoc.coffee"
 _         = require "lodash"
 
 defaultNewDocHtml = require "./../defaultNewDoc.coffee"
