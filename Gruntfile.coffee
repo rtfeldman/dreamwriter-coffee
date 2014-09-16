@@ -21,6 +21,10 @@ module.exports = (grunt) ->
         files: ["src/fonts/*.*"]
         tasks: ["copy"]
 
+      appcache:
+        files: ["src/*.appcache"]
+        tasks: ["copy"]
+
     connect:
       static:
         options:
@@ -28,9 +32,17 @@ module.exports = (grunt) ->
           base: 'dist'
 
     copy:
-      html:
+      appcache:
+        src:  "src/dreamwriter.appcache"
+        dest: "dist/dreamwriter.appcache"
+
+      index:
         src:  "src/index.html"
         dest: "dist/index.html"
+
+      offline:
+        src:  "src/index.html"
+        dest: "dist/offline.html"
 
       images:
         expand: true

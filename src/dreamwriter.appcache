@@ -1,0 +1,24 @@
+CACHE MANIFEST
+# v1.0.0
+
+CACHE:
+/dreamwriter.css
+/dreamwriter.css.map
+/dreamwriter.js
+/vendor.js
+/images/dlogo.png
+/images/favicon.ico
+/images/quarter-backdrop.jpg
+/fonts/roboto-slab-regular.woff
+/fonts/roboto-slab-bold.woff
+/fonts/ubuntu.woff
+/offline.html
+
+NETWORK:
+/
+/index.html
+dropbox.com/
+
+FALLBACK:
+/           /offline.html
+/index.html /offline.html
