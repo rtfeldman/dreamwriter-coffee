@@ -15,9 +15,7 @@ CACHE:
 /offline.html
 
 NETWORK:
-/
-/index.html
-dropbox.com/
+*
 
 FALLBACK:
 /           /offline.html
