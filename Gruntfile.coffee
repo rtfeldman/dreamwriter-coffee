@@ -122,7 +122,6 @@ module.exports = (grunt) ->
     "stylesheets"
     "browserify"
     "copy"
-    "stylesheets"
     "appcache"
   ]
 
