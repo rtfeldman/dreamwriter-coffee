@@ -7,19 +7,23 @@ module.exports = (grunt) ->
     watch:
       stylus:
         files: ["src/stylesheets/**/*.styl"]
-        tasks: ["stylesheets", "appcache"]
+        tasks: ["stylesheets"]
 
       html:
         files: ["src/**/*.html"]
-        tasks: ["copy", "appcache"]
+        tasks: ["copy"]
 
       images:
         files: ["src/images/*.*"]
-        tasks: ["copy", "appcache"]
+        tasks: ["copy"]
 
       fonts:
         files: ["src/fonts/*.*"]
-        tasks: ["copy", "appcache"]
+        tasks: ["copy"]
+
+      dist:
+        files: ["dist/**/*", "!dist/dreamwriter.appcache"]
+        tasks: ["appcache"]
 
     connect:
       static:
