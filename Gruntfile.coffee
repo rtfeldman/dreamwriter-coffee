@@ -101,8 +101,9 @@ module.exports = (grunt) ->
   ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-browserify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus", "grunt-autoprefixer", "grunt-appcache"].forEach (plugin) -> grunt.loadNpmTasks plugin
 
   grunt.registerTask "build", [
-    "copy"
+    "stylesheets"
     "browserify"
+    "copy"
     "stylesheets"
     "appcache"
   ]
