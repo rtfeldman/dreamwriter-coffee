@@ -22,8 +22,8 @@ module.exports = (grunt) ->
         tasks: ["copy:fonts"]
 
       dist:
-        files: ["dist/**/*", "!dist/dreamwriter.appcache"]
-        tasks: ["appcache"]
+        files: ["dist/**/*", "!dist/dreamwriter.appcache", "!dist/cache/**/*"]
+        tasks: ["copy:cache", "appcache"]
 
     connect:
       static:
@@ -36,10 +36,6 @@ module.exports = (grunt) ->
         src:  "src/index.html"
         dest: "dist/index.html"
 
-      offline:
-        src:  "src/index.html"
-        dest: "dist/offline.html"
-
       images:
         expand: true
         cwd: "src"
@@ -51,6 +47,16 @@ module.exports = (grunt) ->
         cwd: "src"
         src: "fonts/**"
         dest: "dist/"
+
+      cache:
+        expand: true
+        cwd: "dist"
+        src: [
+          "*.*"
+          "fonts/*.*"
+          "images/*.*"
+        ]
+        dest: "dist/cache/"
 
     stylus:
       compile:
@@ -90,11 +96,23 @@ module.exports = (grunt) ->
 
       all:
         dest:     'dist/dreamwriter.appcache'
-        cache:    patterns: ['dist/**/*', '!dist/index.html']
+        cache:    patterns: ['dist/cache/**/*']
         network:  '*'
         fallback: [
-          '/           /offline.html'
-          '/index.html /offline.html'
+          # TODO need to find some way to auto-generate this...
+          '/                               /cache/index.html'
+          '/index.html                     /cache/index.html'
+          '/dreamwriter.css                /cache/dreamwriter.css'
+          '/dreamwriter.css.map            /cache/dreamwriter.css.map'
+          '/dreamwriter.js                 /cache/dreamwriter.js'
+          '/vendor.js                      /cache/vendor.js'
+          '/fonts/robot-slab-bold.woff     /cache/fonts/roboto-slab-bold.woff'
+          '/fonts/roboto-slab-regular.woff /cache/fonts/roboto-slab-regular.woff'
+          '/fonts/ubuntu.woff              /cache/fonts/ubuntu.woff'
+          '/images/dlogo.png               /cache/images/dlogo.png'
+          '/images/dropbox-logo.png        /cache/images/dropbox-logo.png'
+          '/images/favicon.ico             /cache/images/favicon.ico'
+          '/images/quarter-backdrop.jpg    /cache/images/quarter-backdrop.jpg'
         ]
 
 
