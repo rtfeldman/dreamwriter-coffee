@@ -7,23 +7,19 @@ module.exports = (grunt) ->
     watch:
       stylus:
         files: ["src/stylesheets/**/*.styl"]
-        tasks: ["stylesheets"]
+        tasks: ["stylesheets", "appcache"]
 
       html:
         files: ["src/**/*.html"]
-        tasks: ["copy"]
+        tasks: ["copy", "appcache"]
 
       images:
         files: ["src/images/*.*"]
-        tasks: ["copy"]
+        tasks: ["copy", "appcache"]
 
       fonts:
         files: ["src/fonts/*.*"]
-        tasks: ["copy"]
-
-      appcache:
-        files: ["src/*.appcache"]
-        tasks: ["copy"]
+        tasks: ["copy", "appcache"]
 
     connect:
       static:
@@ -32,10 +28,6 @@ module.exports = (grunt) ->
           base: 'dist'
 
     copy:
-      appcache:
-        src:  "src/dreamwriter.appcache"
-        dest: "dist/dreamwriter.appcache"
-
       index:
         src:  "src/index.html"
         dest: "dist/index.html"
@@ -88,12 +80,27 @@ module.exports = (grunt) ->
         src:  "./vendor/**/*.js"
         dest: "dist/vendor.js"
 
-  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-browserify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus", "grunt-autoprefixer"].forEach (plugin) -> grunt.loadNpmTasks plugin
+    appcache:
+      options:
+        basePath: 'dist'
+
+      all:
+        dest:     'dist/dreamwriter.appcache'
+        cache:    patterns: ['dist/**/*', '!dist/index.html']
+        network:  '*'
+        fallback: [
+          '/           /offline.html'
+          '/index.html /offline.html'
+        ]
+
+
+  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-browserify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus", "grunt-autoprefixer", "grunt-appcache"].forEach (plugin) -> grunt.loadNpmTasks plugin
 
   grunt.registerTask "build", [
     "copy"
     "browserify"
     "stylesheets"
+    "appcache"
   ]
 
   grunt.registerTask "stylesheets", [
