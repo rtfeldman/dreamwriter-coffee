@@ -82,6 +82,7 @@ module.exports = class DreamStore
 
     if doc.id?
       @readOnlyVersion.getDoc doc.id, (existingDoc) =>
+        console.log "prev timestamp:", existingDoc.lastModified.getTime(), "versus yowza! current:", doc.lastModified.getTime()
         if existingDoc.lastModified.getTime() > doc.lastModified.getTime()
           # TODO handle this by re-rendering etc
           alert "Your document is out of sync! Please refresh."

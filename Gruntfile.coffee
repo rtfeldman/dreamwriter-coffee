@@ -1,5 +1,7 @@
 extraRequires = ["react", "lodash"]
 
+cacheHashPrefix = "dwv_"
+
 module.exports = (grunt) ->
   grunt.initConfig
     clean: ["dist"]
@@ -7,23 +9,23 @@ module.exports = (grunt) ->
     watch:
       stylus:
         files: ["src/stylesheets/**/*.styl"]
-        tasks: ["stylesheets"]
+        tasks: ["stylesheets", "appcache", "hashres"]
 
       html:
         files: ["src/index.html"]
-        tasks: ["copy:index"]
+        tasks: ["copy:index", "copy:offline", "appcache", "hashres"]
 
       images:
         files: ["src/images/*.*"]
-        tasks: ["copy:images"]
+        tasks: ["copy:images", "appcache", "hashres"]
 
       fonts:
         files: ["src/fonts/*.*"]
-        tasks: ["copy:fonts"]
+        tasks: ["copy:fonts", "appcache", "hashres"]
 
-      dist:
-        files: ["dist/**/*", "!dist/dreamwriter.appcache", "!dist/cache/**/*"]
-        tasks: ["copy:cache", "appcache"]
+      javascripts:
+        files: ["dist/**/*.js", "!dist/**/*.#{cacheHashPrefix}*"]
+        tasks: ["appcache", "hashres"]
 
     connect:
       static:
@@ -35,6 +37,10 @@ module.exports = (grunt) ->
       index:
         src:  "src/index.html"
         dest: "dist/index.html"
+
+      offline:
+        src:  "src/index.html"
+        dest: "dist/offline.html"
 
       images:
         expand: true
@@ -48,16 +54,6 @@ module.exports = (grunt) ->
         src: "fonts/**"
         dest: "dist/"
 
-      cache:
-        expand: true
-        cwd: "dist"
-        src: [
-          "*.*"
-          "fonts/*.*"
-          "images/*.*"
-        ]
-        dest: "dist/cache/"
-
     stylus:
       compile:
         options:
@@ -68,7 +64,7 @@ module.exports = (grunt) ->
     autoprefixer:
       dreamwriter:
         options:
-          map: true
+          map: false
 
         src: "dist/dreamwriter.css"
         dest: "dist/dreamwriter.css"
@@ -96,33 +92,37 @@ module.exports = (grunt) ->
 
       all:
         dest:     'dist/dreamwriter.appcache'
-        cache:    patterns: ['dist/cache/**/*']
+        cache:    patterns: ['dist/**/*', '!dist/index.html']
         network:  '*'
         fallback: [
-          # TODO need to find some way to auto-generate this...
-          '/                               /cache/index.html'
-          '/index.html                     /cache/index.html'
-          '/dreamwriter.css                /cache/dreamwriter.css'
-          '/dreamwriter.css.map            /cache/dreamwriter.css.map'
-          '/dreamwriter.js                 /cache/dreamwriter.js'
-          '/vendor.js                      /cache/vendor.js'
-          '/fonts/robot-slab-bold.woff     /cache/fonts/roboto-slab-bold.woff'
-          '/fonts/roboto-slab-regular.woff /cache/fonts/roboto-slab-regular.woff'
-          '/fonts/ubuntu.woff              /cache/fonts/ubuntu.woff'
-          '/images/dlogo.png               /cache/images/dlogo.png'
-          '/images/dropbox-logo.png        /cache/images/dropbox-logo.png'
-          '/images/favicon.ico             /cache/images/favicon.ico'
-          '/images/quarter-backdrop.jpg    /cache/images/quarter-backdrop.jpg'
+          '/           /offline.html'
+          '/index.html /offline.html'
         ]
 
+    hashres:
+      options:
+        fileNameFormat: "${name}.#{cacheHashPrefix}${hash}.${ext}",
+        renameFiles: true
+      all:
+        src: [
+          "dist/**/*.*",
+          "!dist/index.html"
+          "!dist/dreamwriter.appcache"
+        ]
+        dest: [
+          'dist/*.html'
+          'dist/*.css'
+          'dist/*.appcache'
+        ]
 
-  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-browserify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus", "grunt-autoprefixer", "grunt-appcache"].forEach (plugin) -> grunt.loadNpmTasks plugin
+  ["grunt-contrib-watch", "grunt-contrib-clean", "grunt-browserify", "grunt-contrib-copy", "grunt-contrib-connect", "grunt-contrib-stylus", "grunt-autoprefixer", "grunt-appcache", "grunt-hashres"].forEach (plugin) -> grunt.loadNpmTasks plugin
 
   grunt.registerTask "build", [
     "stylesheets"
     "browserify"
     "copy"
     "appcache"
+    "hashres"
   ]
 
   grunt.registerTask "stylesheets", [
