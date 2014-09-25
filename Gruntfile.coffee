@@ -10,16 +10,16 @@ module.exports = (grunt) ->
         tasks: ["stylesheets"]
 
       html:
-        files: ["src/**/*.html"]
-        tasks: ["copy"]
+        files: ["src/index.html"]
+        tasks: ["copy:index"]
 
       images:
         files: ["src/images/*.*"]
-        tasks: ["copy"]
+        tasks: ["copy:images"]
 
       fonts:
         files: ["src/fonts/*.*"]
-        tasks: ["copy"]
+        tasks: ["copy:fonts"]
 
       dist:
         files: ["dist/**/*", "!dist/dreamwriter.appcache"]
